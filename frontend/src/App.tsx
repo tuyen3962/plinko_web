@@ -1,20 +1,20 @@
 // import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Simulation } from "./pages/Simulation";
+// import { Simulation } from "./pages/Simulation";
 import { Game } from "./pages/Game";
 import { Footer, Navbar } from "./components";
-import { Home } from "./pages/Home";
+// import { Home } from "./pages/Home";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/simulation" element={<Simulation />} />
-        <Route path="/game" element={<Game />} />
+        {/* <Route path="/" element={<Home />} />
+        <Route path="/simulation" element={<Simulation />} /> */}
+        <Route path="/" element={<Game />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </BrowserRouter>
   );
 }

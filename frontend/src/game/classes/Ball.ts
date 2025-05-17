@@ -1,6 +1,7 @@
 import { gravity, horizontalFriction, verticalFriction } from "../constants";
-import { Obstacle, Sink } from "../objects";
+import { Obstacle } from "../objects";
 import { pad, unpad } from "../padding";
+import { Sink } from "./Sink";
 
 export class Ball {
     private x: number;
