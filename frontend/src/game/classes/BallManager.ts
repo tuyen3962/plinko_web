@@ -11,23 +11,23 @@ export class BallManager {
     private obstacles: Obstacle[]
     private sinks: Sink[]
     private requestId?: number;
-    private onFinish?: (index: number,startX?: number) => void;
+    private onFinish?: (index: number, startX?: number) => void;
     private sinkFinishIndex: number[] = [];
 
     private screenWidth: number;
     private screenHeight: number;
 
-    constructor(canvasRef: HTMLCanvasElement, 
+    constructor(canvasRef: HTMLCanvasElement,
         width: number,
         height: number,
-        onFinish?: (index: number,startX?: number) => void) {
+        onFinish?: (index: number, startX?: number) => void) {
         this.screenWidth = width;
         this.screenHeight = height;
         this.balls = [];
         this.canvasRef = canvasRef;
         this.ctx = this.canvasRef.getContext("2d")!;
-        this.obstacles = createObstacles(this.screenWidth);
-        this.sinks = createSinks(this.screenWidth);
+        this.obstacles = createObstacles(this.screenWidth, this.screenHeight);
+        this.sinks = createSinks(this.screenWidth, this.screenHeight);
         this.update();
         this.onFinish = onFinish;
         this.sinkFinishIndex = [];
@@ -53,26 +53,26 @@ export class BallManager {
             this.ctx.closePath();
         });
     }
-  getColor(index: number) {
-        if (index <3 || index > this.sinks.length - 3) {
-            return {background: '#ff003f', color: 'white'};
+    getColor(index: number) {
+        if (index < 3 || index > this.sinks.length - 3) {
+            return { background: '#ff003f', color: 'white' };
         }
         if (index < 6 || index > this.sinks.length - 6) {
-            return {background: '#ff7f00', color: 'white'};
+            return { background: '#ff7f00', color: 'white' };
         }
         if (index < 9 || index > this.sinks.length - 9) {
-            return {background: '#ffbf00', color: 'black'};
+            return { background: '#ffbf00', color: 'black' };
         }
         if (index < 12 || index > this.sinks.length - 12) {
-            return {background: '#ffff00', color: 'black'};
+            return { background: '#ffff00', color: 'black' };
         }
         if (index < 15 || index > this.sinks.length - 15) {
-            return {background: '#bfff00', color: 'black'};
+            return { background: '#bfff00', color: 'black' };
         }
-        return {background: '#7fff00', color: 'black'};
+        return { background: '#7fff00', color: 'black' };
     }
-    
-    
+
+
     // drawSinks() {
     //     this.ctx.fillStyle = 'green';
     //     const SPACING = obstacleRadius * 2;
@@ -97,21 +97,17 @@ export class BallManager {
             ball.draw();
             ball.update();
         });
-        this.sinkFinishIndex.forEach(index => {
-            this.sinks[index].update(
+        this.sinkFinishIndex.forEach((value, index, i) => {
+            this.sinks[value].update(
                 () => {
-                    // let oldIndex = this.sinkFinishIndex.findIndex(i => i === index);
-                    // console.log('oldIndex ', oldIndex)
-                    // if(oldIndex != -1) {
-                    //     this.sinkFinishIndex = this.sinkFinishIndex.
-                    // }
-                    this.sinkFinishIndex.pop()
+                    this.sinkFinishIndex = this.sinkFinishIndex.slice(index)
                     console.log('new sinkFinishIndex ', this.sinkFinishIndex)
+                    this.sinks[value].reset();
                 }
-            );            
+            );
         });
     }
-    
+
     update() {
         this.draw(this.screenWidth, this.screenHeight);
         this.requestId = requestAnimationFrame(this.update.bind(this));

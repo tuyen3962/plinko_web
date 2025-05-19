@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { BallManager } from "../game/classes/BallManager";
-import axios from "axios";
 import { Button } from "../components/ui";
-import { baseURL } from "../utils";
+import { BallManager } from "../game/classes/BallManager";
 import { outcomes } from "../game/outcomes";
+import { calculateRatioHeight, obstacleRows, sinkHeight } from "../game/constants";
 
 const TOTAL_DROPS = 16;
 
@@ -29,14 +28,18 @@ const MULTIPLIERS: {[ key: number ]: number} = {
 
 export function Game() {
   const [ballManager, setBallManager] = useState<BallManager>();
+  const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
   const canvasRef = useRef<any>();
 
   useEffect(() => {
+    const totalHeight = 35 * obstacleRows + sinkHeight
+    console.log('totalHeight', totalHeight)
+    setCanvasHeight(totalHeight)
     if (canvasRef.current) {
       const resize = () => {
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
-        console.log('resized ', window.innerWidth, window.innerHeight)
+        // console.log('resized ', window.innerWidth, window.innerHeight)
       };
   
       resize(); // set initial size
@@ -45,7 +48,7 @@ export function Game() {
       const ballManager = new BallManager(    
         canvasRef.current as unknown as HTMLCanvasElement,
         window.innerWidth, 
-        window.innerHeight,
+        window.innerHeight
       );
       setBallManager(ballManager);
       return () => window.removeEventListener('resize', resize);
@@ -79,7 +82,7 @@ export function Game() {
     <div className="flex flex-col lg:flex-row items-center justify-center w-full h-full">
       <canvas ref={canvasRef} style={{
         width: window.innerWidth,
-        height: window.innerHeight
+        // height: canvasHeight
       }}></canvas>
       <Button
         className="px-10 mb-4"

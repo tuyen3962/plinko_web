@@ -1,5 +1,5 @@
 import { Sink } from "./classes/Sink";
-import { NUM_SINKS, obstacleRadius, sinkWidth } from "./constants";
+import { calculateRatioHeight, calculateRatioWidth, NUM_SINKS, obstacleRadius, obstacleRows, sinkHeight, sinkWidth } from "./constants";
 import { pad } from "./padding";
 
 export interface Obstacle {
@@ -36,13 +36,12 @@ const MULTIPLIERS: {[ key: number ]: number} = {
     17: 16
 }
 
-export const createObstacles = (width: number): Obstacle[] => {
+export const createObstacles = (width: number, height: number): Obstacle[] => {
     const obstacles: Obstacle[] = [];
-    const rows = 18;
-    for (let row = 2; row < rows; row++) {
+    for (let row = 2; row < obstacleRows; row++) {
         const numObstacles = row + 1;
-        const y = 0 + row * 35;
-        const spacing = 28;
+        const y = 0 + row * calculateRatioHeight(35, height);
+        const spacing = calculateRatioWidth(36, width);
         for (let col = 0; col < numObstacles; col++) {
             const x = width / 2 - spacing * (row / 2 - col);
             obstacles.push({x: pad(x), y: pad(y), radius: obstacleRadius });
@@ -51,17 +50,17 @@ export const createObstacles = (width: number): Obstacle[] => {
     return obstacles;
 }
 
-export const createSinks = (screenWidth: number): Sink[] => {
+export const createSinks = (screenWidth: number, screenHeight: number): Sink[] => {
     const sinks: Sink[] = [];
-    const heightOfObstacles = 36 * 18;
-    const SPACING = obstacleRadius * 2;
-
+    const heightOfObstacles = calculateRatioHeight(35 * obstacleRows, screenHeight);
+    const SPACING = calculateRatioWidth(obstacleRadius * 2, screenWidth);
+        console.log(heightOfObstacles)
     for (let i = 0; i < NUM_SINKS; i++) {
       const x = screenWidth / 2 + sinkWidth * (i - Math.floor(NUM_SINKS/2)) - SPACING * 1.5;
       const y = heightOfObstacles;
       const width = sinkWidth;
-      const height = width;
-      sinks.push(new Sink(x, y, width, height, MULTIPLIERS[i+1], i));
+      const height = sinkHeight;
+      sinks.push(new Sink(x, y, width, height, MULTIPLIERS[i+1], i, screenWidth, screenHeight));
     }
 
     return sinks;

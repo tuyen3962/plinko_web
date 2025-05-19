@@ -1,8 +1,8 @@
 // import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import { Simulation } from "./pages/Simulation";
 import { Game } from "./pages/Game";
-import { Footer, Navbar } from "./components";
+import { Simulation } from "./pages/Simulation";
 // import { Home } from "./pages/Home";
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
       <Routes>
         {/* <Route path="/" element={<Home />} />
         <Route path="/simulation" element={<Simulation />} /> */}
+         <Route path="/simulation" element={<Simulation />} />
         <Route path="/" element={<Game />} />
       </Routes>
       {/* <Footer /> */}
