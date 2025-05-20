@@ -20,12 +20,12 @@ export class Obstacle {
         img.src = 'peg.png'; // Use your image URL or relative path
 
         // this.ctx.beginPath();
-        // img.onload = () => {
+        img.onload = () => {
             this.ctx.beginPath();
             this.ctx.drawImage(img, unpad(this.x) - this.radius, unpad(this.y) - this.radius, this.radius * 2, this.radius * 2);
             this.ctx.fill()
             this.ctx.closePath();
-        // }
+        }
         // console.log("draw obstacle ", this.x, this.y, this.radius)
     }
 }

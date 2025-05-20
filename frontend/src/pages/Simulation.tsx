@@ -47,6 +47,7 @@ export function Simulation() {
             window.addEventListener('resize', resize);
             const ballManager = new BallManager(
                 canvasRef.current as unknown as HTMLCanvasElement,
+                canvasRef.current as unknown as HTMLCanvasElement,
                 window.innerWidth,
                 window.innerHeight,
                 (index: number, startX?: number) => {

@@ -6,6 +6,7 @@ export interface SinkColor {
 }
 
 export class Sink {
+    private ctx: CanvasRenderingContext2D;
     index: number;
     x: number;
     y: number;
@@ -21,6 +22,7 @@ export class Sink {
     screenHeight: number;
 
     constructor(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, multiplier: number, index: number, screenWidth: number, screenHeight: number) {
+        this.ctx = ctx;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -44,27 +46,27 @@ export class Sink {
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    draw() {
         const color = this.getColor(this.index);
-        ctx.fillStyle = 'transparent';
+        this.ctx.fillStyle = 'transparent';
         const SPACING = 2;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = color.background;
+        this.ctx.fillRect(this.x, this.y, this.width, this.height);
+        this.ctx.fillStyle = color.background;
         // ctx.globalAlpha = 0.64
     
-        ctx.globalAlpha = color.opacity;        
+        this.ctx.globalAlpha = color.opacity;        
 
-        ctx.fillRect(this.x, this.y - this.height / 2, this.width - SPACING, this.height);
-        ctx.fillRect(this.x, this.y + this.height - 5, this.width - SPACING, 4);
-        ctx.shadowColor = color.background;
-        ctx.shadowBlur = 3;
+        this.ctx.fillRect(this.x, this.y - this.height / 2, this.width - SPACING, this.height);
+        this.ctx.fillRect(this.x, this.y + this.height - 5, this.width - SPACING, 4);
+        this.ctx.shadowColor = color.background;
+        this.ctx.shadowBlur = 3;
 
-        ctx.globalAlpha = 1;
+        this.ctx.globalAlpha = 1;
 
-        ctx.textAlign = 'center';
-        ctx.font = 'bold 10px Sora';
-        ctx.fillStyle = 'white';
-        ctx.fillText((this?.multiplier)?.toString() + "x", this.x + this.width / 2.2, this.y + 3);
+        this.ctx.textAlign = 'center';
+        this.ctx.font = 'bold 10px Sora';
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillText((this?.multiplier)?.toString() + "x", this.x + this.width / 2.2, this.y + 3);
     }
 
     update(onEnd?: () => void) {

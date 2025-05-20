@@ -3,10 +3,11 @@ import { Button } from "../components/ui";
 import { BallManager } from "../game/service/BallManager";
 import { outcomes } from "../game/outcomes";
 import { calculateRatioHeight, obstacleRows, sinkHeight } from "../game/constants";
+import { PlinkBackgroundManager } from "../game/service/PlinkBackgroundManager";
 
 const TOTAL_DROPS = 16;
 
-const MULTIPLIERS: {[ key: number ]: number} = {
+const MULTIPLIERS: { [key: number]: number } = {
   0: 16,
   1: 9,
   2: 2,
@@ -28,46 +29,54 @@ const MULTIPLIERS: {[ key: number ]: number} = {
 
 export function Game() {
   const [ballManager, setBallManager] = useState<BallManager>();
-  // const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
+
   const canvasRef = useRef<any>();
+  const plinkBackgroundRef = useRef<any>();
+  useEffect(() => {
+    (window as any).dropBall = () => {
+      if (ballManager) {
+        const result = _dropBallOutcome();
+        ballManager.addBall(result);
+      }
+    }
+  }, [ballManager]);
 
   useEffect(() => {
-    // const totalHeight = 35 * obstacleRows + sinkHeight
-    // console.log('totalHeight', totalHeight)
-    // setCanvasHeight(totalHeight)
-    if (canvasRef.current) {
+    if (canvasRef.current && plinkBackgroundRef.current) {
       const resize = () => {
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
         // console.log('resized ', window.innerWidth, window.innerHeight)
       };
-  
+
       resize(); // set initial size
       window.addEventListener('resize', resize);
-    
-      const ballManager = new BallManager(    
+
+      const ballManager = new BallManager(
         canvasRef.current as unknown as HTMLCanvasElement,
-        window.innerWidth, 
+        plinkBackgroundRef.current as unknown as HTMLCanvasElement,
+        window.innerWidth,
         window.innerHeight
       );
       setBallManager(ballManager);
+
       return () => window.removeEventListener('resize', resize);
     }
-  }, [canvasRef]);
+  }, [canvasRef, plinkBackgroundRef]);
 
   function _dropBallOutcome() {
     let outcome = 0;
     const pattern = []
     for (let i = 0; i < TOTAL_DROPS; i++) {
-        if (Math.random() > 0.5) {
-            pattern.push("R")
-            outcome++;
-        } else {
-            pattern.push("L")
-        }
+      if (Math.random() > 0.5) {
+        pattern.push("R")
+        outcome++;
+      } else {
+        pattern.push("L")
+      }
     }
 
-    console.log("Multiplier " ,MULTIPLIERS[outcome])
+    console.log("Multiplier ", MULTIPLIERS[outcome])
 
     const possiblieOutcomes = outcomes[outcome];
     return possiblieOutcomes[Math.floor(Math.random() * possiblieOutcomes.length || 0)]
@@ -79,15 +88,44 @@ export function Game() {
   }
 
   function getDropBallOutcome() {
-    return _dropBallOutcome();
+    if (ballManager) {
+      const result = _dropBallOutcome();
+      ballManager.addBall(result);
+    }
   }
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center w-full h-full">
-      <canvas ref={canvasRef} style={{
+      <div style={{
+        position: 'relative',
         width: window.innerWidth,
-        // height: canvasHeight
-      }}></canvas>
+        height: window.innerHeight,
+      }}>
+        <canvas
+          width={window.innerWidth}
+          height={window.innerHeight}
+          ref={plinkBackgroundRef} style={{
+            width: window.innerWidth,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 0,
+            pointerEvents: 'none', // Optional: so clicks pass through
+
+          }}></canvas>
+        <canvas ref={canvasRef}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          style={{
+            width: window.innerWidth,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 1, // Foreground layer
+            pointerEvents: 'none', // Optional: so clicks pass through
+
+          }}></canvas>
+      </div>
       <Button
         className="px-10 mb-4"
         onClick={async () => {
