@@ -6,7 +6,7 @@ export const ballRadius = 8;
 export const obstacleRadius = 4;
 
 export const obstacleRows = 12;
-export const gravity = pad(0.3);
+export const gravity = pad(0.6);
 export const horizontalFriction = 0.4;
 export const verticalFriction = 0.8;
 

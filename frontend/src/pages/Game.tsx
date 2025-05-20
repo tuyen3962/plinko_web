@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/ui";
-import { BallManager } from "../game/classes/BallManager";
+import { BallManager } from "../game/service/BallManager";
 import { outcomes } from "../game/outcomes";
 import { calculateRatioHeight, obstacleRows, sinkHeight } from "../game/constants";
 
@@ -32,8 +32,8 @@ export function Game() {
   const canvasRef = useRef<any>();
 
   useEffect(() => {
-    const totalHeight = 35 * obstacleRows + sinkHeight
-    console.log('totalHeight', totalHeight)
+    // const totalHeight = 35 * obstacleRows + sinkHeight
+    // console.log('totalHeight', totalHeight)
     // setCanvasHeight(totalHeight)
     if (canvasRef.current) {
       const resize = () => {

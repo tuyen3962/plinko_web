@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BallManager } from "../game/classes/BallManager";
+import { BallManager } from "../game/service/BallManager";
 import { WIDTH } from "../game/constants";
 import { pad } from "../game/padding";
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { BallManager } from "../game/classes/BallManager";
+import { BallManager } from "../game/service/BallManager";
 import axios from "axios";
 
 

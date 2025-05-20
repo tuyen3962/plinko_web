@@ -1,8 +1,9 @@
 import { ballRadius, NUM_SINKS, obstacleRadius, sinkColorLowLevel, sinkWidth } from "../constants";
-import { Obstacle, createObstacles, createSinks } from "../objects";
+import { createObstacles, createSinks } from "../objects";
 import { pad, unpad } from "../padding";
-import { Ball } from "./Ball";
-import { Sink } from "./Sink";
+import { Ball } from "../objects/Ball";
+import { Sink } from "../objects/Sink";
+import { Obstacle } from "../objects/Obstacle";
 
 export class BallManager {
     private balls: Ball[];
@@ -26,17 +27,19 @@ export class BallManager {
         this.balls = [];
         this.canvasRef = canvasRef;
         this.ctx = this.canvasRef.getContext("2d")!;
-        this.obstacles = createObstacles(this.screenWidth, this.screenHeight);
-        this.sinks = createSinks(this.screenWidth, this.screenHeight);
-        this.update();
+
+        this.sinks = createSinks(this.ctx, this.screenWidth, this.screenHeight);
+        this.obstacles = createObstacles(this.ctx, this.screenWidth, this.screenHeight);
+
         this.onFinish = onFinish;
         this.sinkFinishIndex = [];
+
+        this.update();
     }
 
     addBall(startX?: number) {
         const newBall = new Ball(startX || pad(this.screenWidth / 2 + 13), pad(50), ballRadius, 'red', this.ctx, this.obstacles, this.sinks, (index) => {
             this.balls = this.balls.filter(ball => ball !== newBall);
-            // console.log('result ball ', index, startX)
             this.onFinish?.(index, startX)
             this.sinkFinishIndex.push(index);
             this.sinks[index].isStartMoving = true;
@@ -45,28 +48,25 @@ export class BallManager {
     }
 
     drawObstacles() {
-        this.ctx.fillStyle = 'white';
+        // this.ctx.fillStyle = 'white';
         const img = new Image(); // Create new image
         img.src = 'peg.png'; // Use your image URL or relative path
         this.obstacles.forEach((obstacle) => {
-            // this.ctx.beginPath();
-            // this.ctx.arc(unpad(obstacle.x), unpad(obstacle.y), obstacle.radius, 0, Math.PI * 2);
-            // this.ctx.fill();
-            // this.ctx.closePath();
-            
             this.ctx.beginPath();
-            this.ctx.drawImage(img, unpad(obstacle.x) - obstacle.radius, unpad(obstacle.y) - obstacle.radius, obstacle.radius * 2, obstacle.radius * 2);
+            this.ctx.arc(unpad(obstacle.x), unpad(obstacle.y), obstacle.radius, 0, Math.PI * 2);
+            this.ctx.fill();
             this.ctx.closePath();
         });
     }
-    getColor(index: number) {
-        const center = Math.round(NUM_SINKS / 2) - 1
-        const distance = Math.abs(center - index)
-        return {
-            background: sinkColorLowLevel,
-            opacity: 0.08 * (distance + 3)
-        }
-    }
+
+    // getColor(index: number) {
+    //     const center = Math.round(NUM_SINKS / 2) - 1
+    //     const distance = Math.abs(center - index)
+    //     return {
+    //         background: sinkColorLowLevel,
+    //         opacity: 0.08 * (distance + 3)
+    //     }
+    // }
 
 
     // drawSinks() {
@@ -82,30 +82,36 @@ export class BallManager {
     //     };
     // }
 
-    draw(width: number, height: number) {
-        this.ctx.clearRect(0, 0, width, height);
-        this.drawObstacles();
+    draw() {
+        this.ctx.clearRect(0, 0, this.screenWidth, this.screenHeight);
+        // this.drawObstacles();
         // this.drawSinks();
+        // this.sinks.forEach(sink => {
+        //     sink.draw(this.ctx, this.getColor(sink.index));
+        // })
+        this.obstacles.forEach(obstacle => {
+            obstacle.draw();
+        })
         this.sinks.forEach(sink => {
-            sink.draw(this.ctx, this.getColor(sink.index));
+            sink.draw(this.ctx);
         })
         this.balls.forEach(ball => {
             ball.draw();
             ball.update();
         });
-        this.sinkFinishIndex.forEach((value, index, i) => {
-            this.sinks[value].update(
-                () => {
-                    this.sinkFinishIndex = this.sinkFinishIndex.slice(index)
-                    console.log('remove sink value ', this.sinks[value].multiplier)
-                    this.sinks[value].reset();
-                }
-            );
-        });
+        // this.sinkFinishIndex.forEach((value, index, i) => {
+        //     this.sinks[value].update(
+        //         () => {
+        //             this.sinkFinishIndex = this.sinkFinishIndex.slice(index)
+        //             console.log('remove sink value ', this.sinks[value].multiplier)
+        //             this.sinks[value].reset();
+        //         }
+        //     );
+        // });
     }
 
     update() {
-        this.draw(this.screenWidth, this.screenHeight);
+        this.draw();
         this.requestId = requestAnimationFrame(this.update.bind(this));
     }
 

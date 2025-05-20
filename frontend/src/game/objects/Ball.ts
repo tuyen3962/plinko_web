@@ -1,6 +1,7 @@
 import { gravity, horizontalFriction, verticalFriction } from "../constants";
-import { Obstacle } from "../objects";
+// import { Obstacle } from "../objects";
 import { pad, unpad } from "../padding";
+import { Obstacle } from "./Obstacle";
 import { Sink } from "./Sink";
 
 export class Ball {
@@ -17,6 +18,7 @@ export class Ball {
   private rotation: number = 0;
 
   constructor(x: number, y: number, radius: number, color: string, ctx: CanvasRenderingContext2D, obstacles: Obstacle[], sinks: Sink[], onFinish: (index: number) => void) {
+    console.log("ball drop in x ", x)
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -39,20 +41,29 @@ export class Ball {
     // this.ctx.closePath();
 
     const size = this.radius * 2;
+    this.ctx.clearRect( -this.radius, -this.radius, size, size);
+    // img.onload = () => {
+      // this.ctx.beginPath();
+      // this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
+      // this.ctx.fillStyle = this.color;
+      // this.ctx.fill();
+      // this.ctx.closePath();
+      if (img.complete) {
+        this.ctx.save();
+        this.ctx.translate(unpad(this.x), unpad(this.y)); // move to center
+        this.ctx.rotate(this.rotation); // rotate
+        this.ctx.drawImage(img, -this.radius, -this.radius, size, size);
+        this.ctx.restore();
+      } else {
+        this.ctx.beginPath();
+        this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+        this.ctx.closePath();
+      }
+    // }
 
-    if (img.complete) {
-      this.ctx.save();
-      this.ctx.translate(unpad(this.x), unpad(this.y)); // move to center
-      this.ctx.rotate(this.rotation); // rotate
-      this.ctx.drawImage(img, -this.radius, -this.radius, size, size);
-      this.ctx.restore();
-    } else {
-      this.ctx.beginPath();
-      this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = this.color;
-      this.ctx.fill();
-      this.ctx.closePath();
-    }
+    
   }
 
   update() {

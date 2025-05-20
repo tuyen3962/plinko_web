@@ -1,3 +1,5 @@
+import { NUM_SINKS, sinkColorLowLevel } from "../constants";
+
 export interface SinkColor {
     background: string;
     opacity: number;
@@ -18,7 +20,7 @@ export class Sink {
     screenWidth: number;
     screenHeight: number;
 
-    constructor(x: number, y: number, width: number, height: number, multiplier: number, index: number, screenWidth: number, screenHeight: number) {
+    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, multiplier: number, index: number, screenWidth: number, screenHeight: number) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -29,9 +31,21 @@ export class Sink {
         this.startY = y;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+
+        // this.draw(ctx);
     }
 
-    draw(ctx: CanvasRenderingContext2D, color: SinkColor) {
+    getColor(index: number) {
+        const center = Math.round(NUM_SINKS / 2) - 1
+        const distance = Math.abs(center - index)
+        return {
+            background: sinkColorLowLevel,
+            opacity: 0.08 * (distance + 3)
+        }
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+        const color = this.getColor(this.index);
         ctx.fillStyle = 'transparent';
         const SPACING = 2;
         ctx.fillRect(this.x, this.y, this.width, this.height);
