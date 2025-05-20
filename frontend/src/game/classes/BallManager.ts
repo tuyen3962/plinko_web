@@ -1,4 +1,4 @@
-import { ballRadius, obstacleRadius, sinkWidth } from "../constants";
+import { ballRadius, NUM_SINKS, obstacleRadius, sinkColorLowLevel, sinkWidth } from "../constants";
 import { Obstacle, createObstacles, createSinks } from "../objects";
 import { pad, unpad } from "../padding";
 import { Ball } from "./Ball";
@@ -46,30 +46,26 @@ export class BallManager {
 
     drawObstacles() {
         this.ctx.fillStyle = 'white';
+        const img = new Image(); // Create new image
+        img.src = 'peg.png'; // Use your image URL or relative path
         this.obstacles.forEach((obstacle) => {
+            // this.ctx.beginPath();
+            // this.ctx.arc(unpad(obstacle.x), unpad(obstacle.y), obstacle.radius, 0, Math.PI * 2);
+            // this.ctx.fill();
+            // this.ctx.closePath();
+            
             this.ctx.beginPath();
-            this.ctx.arc(unpad(obstacle.x), unpad(obstacle.y), obstacle.radius, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.drawImage(img, unpad(obstacle.x) - obstacle.radius, unpad(obstacle.y) - obstacle.radius, obstacle.radius * 2, obstacle.radius * 2);
             this.ctx.closePath();
         });
     }
     getColor(index: number) {
-        if (index < 3 || index > this.sinks.length - 3) {
-            return { background: '#ff003f', color: 'white' };
+        const center = Math.round(NUM_SINKS / 2) - 1
+        const distance = Math.abs(center - index)
+        return {
+            background: sinkColorLowLevel,
+            opacity: 0.08 * (distance + 3)
         }
-        if (index < 6 || index > this.sinks.length - 6) {
-            return { background: '#ff7f00', color: 'white' };
-        }
-        if (index < 9 || index > this.sinks.length - 9) {
-            return { background: '#ffbf00', color: 'black' };
-        }
-        if (index < 12 || index > this.sinks.length - 12) {
-            return { background: '#ffff00', color: 'black' };
-        }
-        if (index < 15 || index > this.sinks.length - 15) {
-            return { background: '#bfff00', color: 'black' };
-        }
-        return { background: '#7fff00', color: 'black' };
     }
 
 
@@ -101,7 +97,7 @@ export class BallManager {
             this.sinks[value].update(
                 () => {
                     this.sinkFinishIndex = this.sinkFinishIndex.slice(index)
-                    console.log('new sinkFinishIndex ', this.sinkFinishIndex)
+                    console.log('remove sink value ', this.sinks[value].multiplier)
                     this.sinks[value].reset();
                 }
             );

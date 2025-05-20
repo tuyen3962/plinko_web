@@ -1,8 +1,6 @@
-import { calculateRatioWidth, obstacleRadius } from "../constants";
-
 export interface SinkColor {
     background: string;
-    color: string;
+    opacity: number;
 }
 
 export class Sink {
@@ -40,15 +38,19 @@ export class Sink {
         ctx.fillStyle = color.background;
         // ctx.globalAlpha = 0.64
     
-        
+        ctx.globalAlpha = color.opacity;        
+
         ctx.fillRect(this.x, this.y - this.height / 2, this.width - SPACING, this.height);
         ctx.fillRect(this.x, this.y + this.height - 5, this.width - SPACING, 4);
+        ctx.shadowColor = color.background;
+        ctx.shadowBlur = 3;
+
+        ctx.globalAlpha = 1;
 
         ctx.textAlign = 'center';
         ctx.font = 'bold 10px Sora';
         ctx.fillStyle = 'white';
         ctx.fillText((this?.multiplier)?.toString() + "x", this.x + this.width / 2.2, this.y + 3);
-        
     }
 
     update(onEnd?: () => void) {

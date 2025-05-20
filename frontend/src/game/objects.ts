@@ -30,18 +30,18 @@ const MULTIPLIERS: {[ key: number ]: number} = {
     11: 1.1,
     12: 1.2,
     13: 1.4,
-    14: 1.4,
-    15: 2,
-    16: 9,
-    17: 16
+    // 14: 1.4,
+    // 15: 2,
+    // 16: 9,
+    // 17: 16
 }
 
 export const createObstacles = (width: number, height: number): Obstacle[] => {
     const obstacles: Obstacle[] = [];
     for (let row = 2; row < obstacleRows; row++) {
         const numObstacles = row + 1;
-        const y = 0 + row * calculateRatioHeight(35, height);
-        const spacing = calculateRatioWidth(36, width);
+        const y = row * calculateRatioHeight(35, height);
+        const spacing = 30;
         for (let col = 0; col < numObstacles; col++) {
             const x = width / 2 - spacing * (row / 2 - col);
             obstacles.push({x: pad(x), y: pad(y), radius: obstacleRadius });
@@ -53,8 +53,7 @@ export const createObstacles = (width: number, height: number): Obstacle[] => {
 export const createSinks = (screenWidth: number, screenHeight: number): Sink[] => {
     const sinks: Sink[] = [];
     const heightOfObstacles = calculateRatioHeight(35 * obstacleRows, screenHeight);
-    const SPACING = calculateRatioWidth(obstacleRadius * 2, screenWidth);
-        console.log(heightOfObstacles)
+    const SPACING = obstacleRadius * 2;
     for (let i = 0; i < NUM_SINKS; i++) {
       const x = screenWidth / 2 + sinkWidth * (i - Math.floor(NUM_SINKS/2)) - SPACING * 1.5;
       const y = heightOfObstacles;

@@ -28,13 +28,13 @@ const MULTIPLIERS: {[ key: number ]: number} = {
 
 export function Game() {
   const [ballManager, setBallManager] = useState<BallManager>();
-  const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
+  // const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
   const canvasRef = useRef<any>();
 
   useEffect(() => {
     const totalHeight = 35 * obstacleRows + sinkHeight
     console.log('totalHeight', totalHeight)
-    setCanvasHeight(totalHeight)
+    // setCanvasHeight(totalHeight)
     if (canvasRef.current) {
       const resize = () => {
         canvasRef.current.width = window.innerWidth;
@@ -76,6 +76,10 @@ export function Game() {
     //     multiplier,
     //     pattern
     // });
+  }
+
+  function getDropBallOutcome() {
+    return _dropBallOutcome();
   }
 
   return (
