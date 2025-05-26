@@ -18,7 +18,6 @@ export class Ball {
   private rotation: number = 0;
 
   constructor(x: number, y: number, radius: number, color: string, ctx: CanvasRenderingContext2D, obstacles: Obstacle[], sinks: Sink[], onFinish: (index: number) => void) {
-    console.log("ball drop in x ", x)
     this.x = x;
     this.y = y;
     this.radius = radius;

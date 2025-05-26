@@ -5,6 +5,7 @@ import { pad } from "../game/padding";
 
 export function Simulation() {
     const canvasRef = useRef<any>();
+    const plinkBackgroundRef = useRef<any>();
     let [outputs, setOutputs] = useState<{ [key: number]: number[] }>({
         0: [],
         1: [],
@@ -19,11 +20,11 @@ export function Simulation() {
         10: [],
         11: [],
         12: [],
-        13: [],
-        14: [],
-        15: [],
-        16: [],
-        17: [],
+        // 13: [],
+        // 14: [],
+        // 15: [],
+        // 16: [],
+        // 17: [],
     });
 
     async function simulate(ballManager: BallManager) {
@@ -36,7 +37,7 @@ export function Simulation() {
     }
 
     useEffect(() => {
-        if (canvasRef.current) {
+        if (canvasRef.current && plinkBackgroundRef.current) {
             const resize = () => {
                 canvasRef.current.width = window.innerWidth;
                 canvasRef.current.height = window.innerHeight;
@@ -47,7 +48,7 @@ export function Simulation() {
             window.addEventListener('resize', resize);
             const ballManager = new BallManager(
                 canvasRef.current as unknown as HTMLCanvasElement,
-                canvasRef.current as unknown as HTMLCanvasElement,
+                plinkBackgroundRef.current as unknown as HTMLCanvasElement,
                 window.innerWidth,
                 window.innerHeight,
                 (index: number, startX?: number) => {
@@ -65,17 +66,46 @@ export function Simulation() {
                 ballManager.stop();
             };
         }
-    }, [canvasRef]);
+    }, [canvasRef, plinkBackgroundRef]);
 
     return (
         <div className="flex flex-col lg:flex-row  items-center justify-between h-screen">
             <div className="flex mx-16 flex-col justify-center pt-10">
                 {JSON.stringify(outputs, null, 2)}
             </div>
-            <div className="flex flex-col items-center justify-center">
+            {/* <div className="flex flex-col items-center justify-center">
                 <canvas ref={canvasRef} style={{
                     width: window.innerWidth,
                     height: window.innerHeight
+                }}></canvas>
+            </div> */}
+            <div style={{
+                position: 'relative',
+                width: window.innerWidth,
+                height: window.innerHeight,
+            }}>
+                <canvas
+                width={window.innerWidth}
+                height={window.innerHeight}
+                ref={plinkBackgroundRef} style={{
+                    width: window.innerWidth,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 0,
+                    pointerEvents: 'none', // Optional: so clicks pass through
+
+                }}></canvas>
+                <canvas ref={canvasRef}
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                    style={{
+                        width: window.innerWidth,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 1, // Foreground layer
+                        pointerEvents: 'none', // Optional: so clicks pass through
                 }}></canvas>
             </div>
         </div>
