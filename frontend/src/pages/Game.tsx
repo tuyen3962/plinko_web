@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BallManager } from "../game/classes/BallManager";
-import axios from "axios";
 import { Button } from "../components/ui";
-import { baseURL } from "../utils";
 import { outcomes } from "../game/outcomes";
 
 const TOTAL_DROPS = 16;
@@ -24,8 +22,8 @@ const MULTIPLIERS: { [key: number]: number } = {
   13: 1.4,
   14: 2,
   15: 9,
-  16: 16
-}
+  16: 16,
+};
 
 export function Game() {
   const [ballManager, setBallManager] = useState<BallManager>();
@@ -37,7 +35,7 @@ export function Game() {
         const result = _dropBallOutcome();
         ballManager.addBall(result);
       }
-    }
+    };
   }, [ballManager]);
 
   useEffect(() => {
@@ -51,23 +49,22 @@ export function Game() {
 
   function _dropBallOutcome() {
     let outcome = 0;
-    const pattern = []
+    const pattern = [];
     for (let i = 0; i < TOTAL_DROPS; i++) {
       if (Math.random() > 0.5) {
-        pattern.push("R")
+        pattern.push("R");
         outcome++;
       } else {
-        pattern.push("L")
+        pattern.push("L");
       }
     }
 
-    
-    console.log("Multiplier ", MULTIPLIERS[outcome])
-
+    console.log("Multiplier ", MULTIPLIERS[outcome]);
 
     const possiblieOutcomes = outcomes[outcome];
-    return possiblieOutcomes[Math.floor(Math.random() * possiblieOutcomes.length || 0)]
-
+    return possiblieOutcomes[
+      Math.floor(Math.random() * possiblieOutcomes.length || 0)
+    ];
   }
 
   return (
@@ -76,9 +73,6 @@ export function Game() {
       <Button
         className="px-10 mb-4"
         onClick={async () => {
-          // const response = await axios.post(`${baseURL}/game`, {
-          //   data: 1,
-          // });
           const response = _dropBallOutcome();
           if (ballManager) {
             ballManager.addBall(response);
@@ -89,5 +83,4 @@ export function Game() {
       </Button>
     </div>
   );
-
 }
