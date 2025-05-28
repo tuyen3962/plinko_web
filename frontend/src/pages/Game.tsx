@@ -3,31 +3,29 @@ import { BallManager } from "../game/classes/BallManager";
 import { Button } from "../components/ui";
 import { outcomes } from "../game/outcomes";
 
-const TOTAL_DROPS = 16;
+const TOTAL_DROPS = 13;
 
 const MULTIPLIERS: { [key: number]: number } = {
-  0: 16,
-  1: 9,
-  2: 2,
-  3: 1.4,
-  4: 1.4,
-  5: 1.2,
-  6: 1.1,
-  7: 1,
-  8: 0.5,
-  9: 1,
-  10: 1.1,
-  11: 1.2,
-  12: 1.4,
-  13: 1.4,
-  14: 2,
-  15: 9,
-  16: 16,
+  0: 10,
+  1: 4,
+  2: 3,
+  3: 1.9,
+  4: 1.2,
+  5: 0.9,
+  6: 0.7,
+  7: 0.9,
+  8: 1.2,
+  9: 1.9,
+  10: 3,
+  11: 4,
+  12: 10
 };
 
 export function Game() {
   const [ballManager, setBallManager] = useState<BallManager>();
   const canvasRef = useRef<any>();
+  const obstacleCanvasRef = useRef<any>();
+  const sinkCanvasRef = useRef<any>();
 
   useEffect(() => {
     (window as any).dropBall = () => {
@@ -36,16 +34,35 @@ export function Game() {
         ballManager.addBall(result);
       }
     };
+
+    (window as any).setSinkColor = (color: string) => {
+      if (ballManager) {
+        ballManager.setSinkColor(color);
+      }
+    };
+
+    (window as any).setSinkMultiplier = (multiplier: number[]) => {
+      if (ballManager) {
+        ballManager.setSinkMultiplier(multiplier);
+      }
+    };
+
+    window.scrollTo({
+      top: 55
+    });
+
   }, [ballManager]);
 
   useEffect(() => {
     if (canvasRef.current) {
       const ballManager = new BallManager(
-        canvasRef.current as unknown as HTMLCanvasElement
+        canvasRef.current as unknown as HTMLCanvasElement,
+        obstacleCanvasRef.current as unknown as HTMLCanvasElement,
+        sinkCanvasRef.current as unknown as HTMLCanvasElement
       );
       setBallManager(ballManager);
     }
-  }, [canvasRef]);
+  }, [canvasRef, obstacleCanvasRef, sinkCanvasRef]);
 
   function _dropBallOutcome() {
     let outcome = 0;
@@ -69,7 +86,33 @@ export function Game() {
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center">
-      <canvas ref={canvasRef} width="800" height="800"></canvas>
+      <div style={{
+        position: 'relative',
+        width: '800px',
+        height: '800px',
+      }}>
+        <canvas ref={canvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 0,
+          pointerEvents: 'none', // Optional: so clicks pass through
+        }}></canvas>
+        <canvas ref={obstacleCanvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 1, // Foreground layer
+          pointerEvents: 'none', // Optional: so clicks pass through
+        }}></canvas>
+        <canvas ref={sinkCanvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 2, // Foreground layer
+        }}></canvas>
+      </div>
+
       <Button
         className="px-10 mb-4"
         onClick={async () => {

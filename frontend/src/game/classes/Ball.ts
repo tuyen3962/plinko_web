@@ -12,7 +12,9 @@ export class Ball {
   private ctx: CanvasRenderingContext2D;
   private obstacles: Obstacle[];
   private sinks: Sink[];
-  private onFinish: (index: number) => void;
+  private onFinish: (index: number, multiplier: number | undefined) => void;
+  
+  private rotation: number = 0;
 
   constructor(
     x: number,
@@ -22,7 +24,7 @@ export class Ball {
     ctx: CanvasRenderingContext2D,
     obstacles: Obstacle[],
     sinks: Sink[],
-    onFinish: (index: number) => void
+    onFinish: (index: number, multiplier: number | undefined) => void
   ) {
     this.x = x;
     this.y = y;
@@ -37,11 +39,29 @@ export class Ball {
   }
 
   draw() {
-    this.ctx.beginPath();
-    this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
-    this.ctx.fillStyle = this.color;
-    this.ctx.fill();
-    this.ctx.closePath();
+    // this.ctx.beginPath();
+    // this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
+    // this.ctx.fillStyle = this.color;
+    // this.ctx.fill();
+    // this.ctx.closePath();
+    const img = new Image(); // Create new image
+    img.src = 'ball.png'; 
+
+    const size = this.radius * 2.4;
+
+    if (img.complete) {
+      this.ctx.save();
+      this.ctx.translate(unpad(this.x), unpad(this.y)); // move to center
+      this.ctx.rotate(this.rotation); // rotate
+      this.ctx.drawImage(img, -this.radius, -this.radius, size, size);
+      this.ctx.restore();
+    } else {
+      this.ctx.beginPath();
+      this.ctx.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2);
+      this.ctx.fillStyle = this.color;
+      this.ctx.fill();
+      this.ctx.closePath();
+    }
   }
 
   update() {
@@ -57,6 +77,8 @@ export class Ball {
         const angle = Math.atan2(this.y - obstacle.y, this.x - obstacle.x);
         // Reflect velocity
         const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        this.rotation += speed * 0.05; // tune this factor as needed
+
         this.vx = Math.cos(angle) * speed * horizontalFriction;
         this.vy = Math.sin(angle) * speed * verticalFriction;
 
@@ -77,7 +99,7 @@ export class Ball {
       ) {
         this.vx = 0;
         this.vy = 0;
-        this.onFinish(i);
+        this.onFinish(i, sink.multiplier);
         break;
       }
     }

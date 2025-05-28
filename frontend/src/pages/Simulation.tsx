@@ -5,6 +5,9 @@ import { pad } from "../game/padding";
 
 export function Simulation() {
   const canvasRef = useRef<any>();
+  const obstacleCanvasRef = useRef<any>();
+  const sinkCanvasRef = useRef<any>();
+
   let [outputs, setOutputs] = useState<{ [key: number]: number[] }>({
     0: [],
     1: [],
@@ -18,12 +21,7 @@ export function Simulation() {
     9: [],
     10: [],
     11: [],
-    12: [],
-    13: [],
-    14: [],
-    15: [],
-    16: [],
-    17: [],
+    12: []
   });
 
   async function simulate(ballManager: BallManager) {
@@ -39,6 +37,8 @@ export function Simulation() {
     if (canvasRef.current) {
       const ballManager = new BallManager(
         canvasRef.current as unknown as HTMLCanvasElement,
+        obstacleCanvasRef.current as unknown as HTMLCanvasElement,
+        sinkCanvasRef.current as unknown as HTMLCanvasElement,
         (index: number, startX?: number) => {
           setOutputs((outputs: any) => {
             return {
@@ -54,7 +54,7 @@ export function Simulation() {
         ballManager.stop();
       };
     }
-  }, [canvasRef]);
+  }, [canvasRef, obstacleCanvasRef, sinkCanvasRef]);
 
   return (
     <div className="flex flex-col lg:flex-row  items-center justify-between h-screen">
@@ -62,7 +62,33 @@ export function Simulation() {
         {JSON.stringify(outputs, null, 2)}
       </div>
       <div className="flex flex-col items-center justify-center">
-        <canvas ref={canvasRef} width="800" height="800"></canvas>
+        {/* <canvas ref={canvasRef} width="800" height="800"></canvas> */}
+        <div style={{
+        position: 'relative',
+        width: '800px',
+        height: '800px',
+      }}>
+        <canvas ref={canvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 0,
+          pointerEvents: 'none', // Optional: so clicks pass through
+        }}></canvas>
+        <canvas ref={obstacleCanvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 1, // Foreground layer
+          pointerEvents: 'none', // Optional: so clicks pass through
+        }}></canvas>
+        <canvas ref={sinkCanvasRef} width="800" height="800" style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 2, // Foreground layer
+        }}></canvas>
+      </div>
       </div>
     </div>
   );

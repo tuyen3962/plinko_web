@@ -10,19 +10,22 @@ function App() {
   useEffect(() => {
     const meta = document.createElement('meta');
     meta.name = 'viewport';
-    meta.content = 'width=device-width, initial-scale=0.6, user-scalable=no';
+    meta.content = 'width=device-width, initial-scale=0.8, user-scalable=yes';
     document.head.appendChild(meta);
+
+    const body = document.body;
+    body.style.backgroundColor = 'transparent';
 
   }, []);
   return (
     <BrowserRouter>
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/simulation" element={<Simulation />} />
         <Route path="/game" element={<Game />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </BrowserRouter>
   );
 }
