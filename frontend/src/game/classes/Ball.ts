@@ -1,6 +1,8 @@
 import { gravity, horizontalFriction, verticalFriction } from "../constants";
-import { Obstacle, Sink } from "../objects";
 import { pad, unpad } from "../padding";
+import { Obstacle } from "./Obstacle";
+import { ObstacleManager } from "./ObstacleManager";
+import { Sink } from "./Sink";
 
 export class Ball {
   private x: number;
@@ -10,9 +12,12 @@ export class Ball {
   private vx: number;
   private vy: number;
   private ctx: CanvasRenderingContext2D;
+  private result: number;
+  private obstacleManager: ObstacleManager;
   private obstacles: Obstacle[];
   private sinks: Sink[];
-  private onFinish: (index: number, multiplier: number | undefined) => void;
+  private onFinish: (index: number, result: number) => void;
+  private resultAmount: number;
   
   private rotation: number = 0;
 
@@ -22,9 +27,11 @@ export class Ball {
     radius: number,
     color: string,
     ctx: CanvasRenderingContext2D,
-    obstacles: Obstacle[],
+    obstacleManager: ObstacleManager,
     sinks: Sink[],
-    onFinish: (index: number, multiplier: number | undefined) => void
+    result: number,
+    resultAmount: number,
+    onFinish: (index: number, result: number) => void
   ) {
     this.x = x;
     this.y = y;
@@ -33,9 +40,12 @@ export class Ball {
     this.vx = 0;
     this.vy = 0;
     this.ctx = ctx;
-    this.obstacles = obstacles;
+    this.obstacleManager = obstacleManager;
+    this.obstacles = obstacleManager.obstacles;
     this.sinks = sinks;
     this.onFinish = onFinish;
+    this.result = result;
+    this.resultAmount = resultAmount;
   }
 
   draw() {
@@ -70,7 +80,8 @@ export class Ball {
     this.y += this.vy;
 
     // Collision with obstacles
-    this.obstacles.forEach((obstacle) => {
+    for(let i = 0; i < this.obstacles.length; i++) {
+      const obstacle = this.obstacles[i];
       const dist = Math.hypot(this.x - obstacle.x, this.y - obstacle.y);
       if (dist < pad(this.radius + obstacle.radius)) {
         // Calculate collision angle
@@ -86,8 +97,27 @@ export class Ball {
         const overlap = this.radius + obstacle.radius - unpad(dist);
         this.x += pad(Math.cos(angle) * overlap);
         this.y += pad(Math.sin(angle) * overlap);
+        this.obstacleManager.highlightObstacle(i);
       }
-    });
+    }
+    // this.obstacles.forEach((obstacle) => {
+    //   const dist = Math.hypot(this.x - obstacle.x, this.y - obstacle.y);
+    //   if (dist < pad(this.radius + obstacle.radius)) {
+    //     // Calculate collision angle
+    //     const angle = Math.atan2(this.y - obstacle.y, this.x - obstacle.x);
+    //     // Reflect velocity
+    //     const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+    //     this.rotation += speed * 0.05; // tune this factor as needed
+
+    //     this.vx = Math.cos(angle) * speed * horizontalFriction;
+    //     this.vy = Math.sin(angle) * speed * verticalFriction;
+
+    //     // Adjust position to prevent sticking
+    //     const overlap = this.radius + obstacle.radius - unpad(dist);
+    //     this.x += pad(Math.cos(angle) * overlap);
+    //     this.y += pad(Math.sin(angle) * overlap);
+    //   }
+    // });
 
     // Collision with sinks
     for (let i = 0; i < this.sinks.length; i++) {
@@ -99,7 +129,7 @@ export class Ball {
       ) {
         this.vx = 0;
         this.vy = 0;
-        this.onFinish(i, sink.multiplier);
+        this.onFinish(i, this.result);
         break;
       }
     }

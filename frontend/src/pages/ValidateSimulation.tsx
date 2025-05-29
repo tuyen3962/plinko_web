@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { BallManager } from "../game/classes/BallManager";
-import { WIDTH } from "../game/constants";
+import { NUM_SINKS, WIDTH } from "../game/constants";
 import { pad } from "../game/padding";
+import { outcomes } from "../game/outcomes";
+import { MULTIPLIERS } from "../game/objects";
 
-export function Simulation() {
+export function ValidateSimulation() {
   const canvasRef = useRef<any>();
   const obstacleCanvasRef = useRef<any>();
   const sinkCanvasRef = useRef<any>();
@@ -25,12 +27,20 @@ export function Simulation() {
   });
 
   async function simulate(ballManager: BallManager) {
-    let i = 0;
-    while (1) {
-      i++;
-      ballManager.addBall(pad(WIDTH / 2 + 20 * (Math.random() - 0.5)));
-      await new Promise((resolve) => setTimeout(resolve, 200));
+    
+    // while (1) {
+    //   i++;
+    //   ballManager.addBall(pad(WIDTH / 2 + 20 * (Math.random() - 0.5)));
+    //   await new Promise((resolve) => setTimeout(resolve, 200));
+    // }
+    for(let i = 0; i < NUM_SINKS; i++) {
+        for(let position = 0; position < outcomes[i].length; position++) {
+            ballManager.retestBall(MULTIPLIERS[i + 1], outcomes[i][position]);
+            await new Promise((resolve) => setTimeout(resolve, 200));
+        }
     }
+    console.log('end of simulation')
+    console.log('outputs', outputs)
   }
 
   useEffect(() => {

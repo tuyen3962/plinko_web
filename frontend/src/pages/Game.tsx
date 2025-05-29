@@ -35,6 +35,12 @@ export function Game() {
       }
     };
 
+    (window as any).dropBallWithStartX = (startX: number, resultAmount: number) => {
+      if (ballManager) {
+        ballManager.addBall(startX, resultAmount);
+      }
+    };
+
     (window as any).setSinkColor = (color: string) => {
       if (ballManager) {
         ballManager.setSinkColor(color);
@@ -48,21 +54,31 @@ export function Game() {
     };
 
     window.scrollTo({
-      top: 55
+      top: 40
     });
-
   }, [ballManager]);
-
+  
   useEffect(() => {
     if (canvasRef.current) {
       const ballManager = new BallManager(
         canvasRef.current as unknown as HTMLCanvasElement,
         obstacleCanvasRef.current as unknown as HTMLCanvasElement,
-        sinkCanvasRef.current as unknown as HTMLCanvasElement
+        sinkCanvasRef.current as unknown as HTMLCanvasElement,
+        (index, multiplier, startX, resultAmount) => {
+          notifyFlutter(multiplier ?? 0, resultAmount ?? 1);
+        }
       );
       setBallManager(ballManager);
     }
   }, [canvasRef, obstacleCanvasRef, sinkCanvasRef]);
+
+  function notifyFlutter(multiplier: number, resultAmount: number) {
+    if ((window as any).BallCallback) {
+      (window as any).BallCallback.postMessage(`${multiplier} ${resultAmount}`);
+    }
+    
+  }
+  
 
   function _dropBallOutcome() {
     let outcome = 0;

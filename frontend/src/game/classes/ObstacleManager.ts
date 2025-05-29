@@ -1,5 +1,6 @@
-import { createObstacles, createSinks, Obstacle } from "../objects";
+import { createObstacles } from "../objects";
 import { unpad } from "../padding";
+import { Obstacle } from "./Obstacle";
 
 export class ObstacleManager {
     private canvasRef: HTMLCanvasElement;
@@ -27,34 +28,41 @@ export class ObstacleManager {
 
     drawObstacles() {
         this.obstacles.forEach((obstacle) => {
-            const scaleFactor = 1.3;
-            const scaledRadius = obstacle.radius * scaleFactor;
+            obstacle.draw(this.ctx);
+            // const scaleFactor = 1.3;
+            // const scaledRadius = obstacle.radius * scaleFactor;
 
-            // Draw white outer circle
-            this.ctx.fillStyle = "white";
-            this.ctx.beginPath();
-            this.ctx.arc(
-                unpad(obstacle.x),
-                unpad(obstacle.y),
-                scaledRadius,
-                0,
-                Math.PI * 2
-            );
-            this.ctx.fill();
-            this.ctx.closePath();
+            // // Draw white outer circle
+            // this.ctx.fillStyle = "white";
+            // this.ctx.beginPath();
+            // this.ctx.arc(
+            //     unpad(obstacle.x),
+            //     unpad(obstacle.y),
+            //     scaledRadius,
+            //     0,
+            //     Math.PI * 2
+            // );
+            // this.ctx.fill();
+            // this.ctx.closePath();
 
-            // Draw black inner circle
-            this.ctx.fillStyle = "black";
-            this.ctx.beginPath();
-            this.ctx.arc(
-                unpad(obstacle.x),
-                unpad(obstacle.y),
-                scaledRadius * 0.6,
-                0,
-                Math.PI * 2
-            );
-            this.ctx.fill();
-            this.ctx.closePath();
+            // // Draw black inner circle
+            // this.ctx.fillStyle = "black";
+            // this.ctx.beginPath();
+            // this.ctx.arc(
+            //     unpad(obstacle.x),
+            //     unpad(obstacle.y),
+            //     scaledRadius * 0.6,
+            //     0,
+            //     Math.PI * 2
+            // );
+            // this.ctx.fill();
+            // this.ctx.closePath();
+        });
+    }
+
+    highlightObstacle(index: number) {
+        this.obstacles[index].highlight(() => {
+            this.drawObstacles();
         });
     }
 }

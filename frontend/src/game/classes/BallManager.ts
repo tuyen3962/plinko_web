@@ -8,13 +8,8 @@ export class BallManager {
   private balls: Ball[];
   private canvasRef: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  // private obstacles: Obstacle[];
-  // private sinks: Sink[];
   private requestId?: number;
-  private onFinish?: (index: number, multiplier: number | undefined, startX?: number) => void;
-  private sinkAnimation: {
-    [key: number]: { startTime: number; originalY: number | undefined };
-  }; // Track animation for each sink
+  private onFinish?: (index: number, multiplier: number | undefined, startX?: number, resultAmount?: number) => void;
 
   // Manager
   private obstacleManager: ObstacleManager;
@@ -24,14 +19,13 @@ export class BallManager {
     canvasRef: HTMLCanvasElement,
     obstacleCanvasRef: HTMLCanvasElement,
     sinkCanvasRef: HTMLCanvasElement,
-    onFinish?: (index: number, multiplier: number | undefined, startX?: number) => void
+    onFinish?: (index: number, multiplier: number | undefined, startX?: number, resultAmount?: number) => void
   ) {
     this.balls = [];
     this.canvasRef = canvasRef;
     this.ctx = this.canvasRef.getContext("2d")!;
     this.obstacleManager = new ObstacleManager(obstacleCanvasRef, WIDTH, HEIGHT);
     this.sinkManager = new SinkManager(sinkCanvasRef, "#81B032");
-    this.sinkAnimation = {}; // Initialize animation tracking
     this.onFinish = onFinish;
     // this.obstacleManager.draw();
     // this.sinkManager.drawSinks();
@@ -46,38 +40,38 @@ export class BallManager {
     this.sinkManager.setMultiplier(multiplier);
   }
 
-  addBall(startX?: number) {
+  addBall(startX?: number, resultAmount?: number) {
     const newBall = new Ball(startX || pad(WIDTH / 2 + 13), pad(50), ballRadius, 'red',
-     this.ctx, this.obstacleManager.obstacles, this.sinkManager.sinks, (index, multiplier) => {
+      this.ctx, this.obstacleManager, this.sinkManager.sinks, 1, resultAmount ?? 1, (index: number, result: number) => {
       this.balls = this.balls.filter(ball => ball !== newBall);
-      console.log('result ', multiplier, ' index ', index, ' original multiplier ', this.sinkManager.sinks[index].multiplier  )
-      this.onFinish?.(index, multiplier, startX)
+      console.log('result ', result, ' index ', index, ' original multiplier ', this.sinkManager.sinks[index].multiplier  )
+      this.onFinish?.(index, this.sinkManager.sinks[index].multiplier, startX, resultAmount)
 
       // Update the sink's y position immediately
       // this.sinkManager.sinks[index].y += 10; // Move down by 20 pixels (adjust as needed)
       this.sinkManager.animationSink(index);
 
     });
-    // const newBall = new Ball(
-    //   3980805.7004139693,
-    //   pad(50),
-    //   ballRadius,
-    //   "red",
-    //   this.ctx,
-    //   this.obstacleManager.obstacles,
-    //   this.sinkManager.sinks,
-    //   (index) => {
-    //     this.balls = this.balls.filter((ball) => ball !== newBall);
-    //     this.onFinish?.(index, startX);
-    //     // Start animation for the sink at this index
-    //     this.sinkAnimation[index] = {
-    //       startTime: Date.now(),
-    //       originalY: this.sinkManager.sinks[index].originalY,
-    //     };
-    //     // Update the sink's y position immediately
-    //     this.sinkManager.sinks[index].y += 10; // Move down by 20 pixels (adjust as needed)
-    //   }
-    // );
+    this.balls.push(newBall);
+  }
+
+  retestBall(multiplier: number, startX?: number, resultAmount?: number) {
+    const newBall = new Ball(startX || pad(WIDTH / 2 + 13), pad(50), ballRadius, 'red',
+      this.ctx, this.obstacleManager, this.sinkManager.sinks, multiplier, resultAmount ?? 1, (index: number, result: number) => {
+      this.balls = this.balls.filter(ball => ball !== newBall);
+      // console.log('result ', result, ' index ', index, ' original multiplier ', this.sinkManager.sinks[index].multiplier)
+      if(this.sinkManager.sinks[index].multiplier !== result) {
+        console.log('multiplier mismatch: expected multiplier ', this.sinkManager.sinks[index].multiplier, ' original sink multiplier ', multiplier)
+      } else {
+        this.onFinish?.(index, this.sinkManager.sinks[index].multiplier, startX)
+      }
+      
+
+      // Update the sink's y position immediately
+      // this.sinkManager.sinks[index].y += 10; // Move down by 20 pixels (adjust as needed)
+      this.sinkManager.animationSink(index);
+
+    });
     this.balls.push(newBall);
   }
 

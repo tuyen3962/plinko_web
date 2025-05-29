@@ -1,3 +1,4 @@
+import { Obstacle } from "./classes/Obstacle";
 import { Sink } from "./classes/Sink";
 import {
   HEIGHT,
@@ -12,11 +13,11 @@ import {
 } from "./constants";
 import { pad } from "./padding";
 
-export interface Obstacle {
-  x: number;
-  y: number;
-  radius: number;
-}
+// export interface Obstacle {
+//   x: number;
+//   y: number;
+//   radius: number;
+// }
 
 // export interface Sink {
 //   x: number;
@@ -54,11 +55,11 @@ export const createObstacles = (): Obstacle[] => {
     const spacing = 36;
     for (let col = 0; col < numObstacles; col++) {
       const x = WIDTH / 2 - spacing * (row / 2 - col);
-      obstacles.push({
-        x: pad(x),
-        y: pad(y),
-        radius: obstacleRadius,
-      });
+      obstacles.push(new Obstacle(
+        pad(x),
+        pad(y),
+        obstacleRadius,
+      ));
     }
   }
   return obstacles;
@@ -87,7 +88,7 @@ export const createSinks = (): Sink[] => {
       //opacityGradient
       0,
       //backgroundOpacity
-      0.12 + (distance * (center > i ? (center - i) : (i - center)) / center)
+      MIN_SINK_OPACITY + (distance * (center > i ? (center - i) : (i - center)) / center)
     ));
   }
 

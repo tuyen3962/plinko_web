@@ -16,8 +16,8 @@ export const NUM_OBSTACLES = 14;
 
 export const SINK_ANIMATION_HEIGHT = 20;
 
-export const SINK_OPACITY_GRADIENT = 0.64;
-export const MIN_SINK_OPACITY = 0.12;
+export const SINK_OPACITY_GRADIENT = 0.88;
+export const MIN_SINK_OPACITY = 0.36;
 
 export const MAX_SINK_OPACITY = 0.32;
 // export const SINK_ANIMATION_SPEED = 2;

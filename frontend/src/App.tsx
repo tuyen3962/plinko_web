@@ -3,8 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Simulation } from "./pages/Simulation";
 import { Game } from "./pages/Game";
 import { Footer, Navbar } from "./components";
-import { Home } from "./pages/Home";
+// import { Home } from "./pages/Home";
 import { useEffect } from "react";
+import { ValidateSimulation } from "./pages/ValidateSimulation";
 
 function App() {
   useEffect(() => {
@@ -21,9 +22,10 @@ function App() {
     <BrowserRouter>
       {/* <Navbar /> */}
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/simulation" element={<Simulation />} />
         <Route path="/game" element={<Game />} />
+        <Route path="/validate" element={<ValidateSimulation />} />
       </Routes>
       {/* <Footer /> */}
     </BrowserRouter>
